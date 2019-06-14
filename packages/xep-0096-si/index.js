@@ -99,10 +99,9 @@ class SIPlugin extends EventEmitter {
             const { from: FROM, id: ID } = res.attrs;
             const values = parseValues(res);
             if (values[0] && values[0].text()) {
-                this.emit('siSendSuccess', { from: FROM, id: ID, method: values[0].text() });
+                return res;
             }
-        }).catch(err => {
-            this.emit('siSendFail', { from: to, id });
+            throw res;
         });
     }
 
