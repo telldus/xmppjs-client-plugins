@@ -35,6 +35,16 @@ class SIPlugin extends EventEmitter {
     constructor(client) {
         super();
         this.client = client;
+        this.init();
+    }
+
+    init() {
+        const { iqCallee } = this.client;
+        iqCallee.set(SINS, 'si', ctx => {
+            if (isSIStreamInitiationRequest(ctx)) {
+                this.onSIStreamInitiationRequest(ctx);
+            }
+        });
     }
 
     send(id, sid, to, fileSize, fileName, mimeType, date, hash) {
@@ -92,7 +102,7 @@ class SIPlugin extends EventEmitter {
                 this.emit('siSendSuccess', { from: FROM, id: ID, method: values[0].text() });
             }
         }).catch(err => {
-            this.emit('siSendFail', { from, id });
+            this.emit('siSendFail', { from: to, id });
         });
     }
 
@@ -119,37 +129,27 @@ class SIPlugin extends EventEmitter {
             {
                 'xmlns': SINS,
             },
-                xml('file',
+                xml('feature',
                 {
-                    'xmlns': SIPNS,
+                    'xmlns': SIFNNS,
                 },
-                    xml('feature',
+                    xml('x',
                     {
-                        'xmlns': SIFNNS,
+                        'xmlns': DNS,
+                        'type': 'submit',
                     },
-                        xml('x',
+                        xml('field',
                         {
-                            'xmlns': DNS,
-                            'type': 'submit',
+                            'var': 'stream-method',
                         },
-                            xml('field',
-                            {
-                                'var': 'stream-method',
-                            },
-                                xml('value', null, acceptedMeth),
-                            ),
+                            xml('value', null, acceptedMeth),
                         ),
                     ),
                 ),
             ),
         );
-
         return iqCaller
         .request(res);
-    }
-
-    onSIStreamRequestConfirmation() {
-
     }
 }
 
@@ -161,15 +161,6 @@ class SIPlugin extends EventEmitter {
  */
 function setupSI(client) {
     const plugin = new SIPlugin(client);
-    const {middleware} = client;
-
-    middleware.use((context, next) => {
-        if (isSIStreamInitiationRequest(context)) {
-            return plugin.onSIStreamInitiationRequest(context);
-        }
-
-        return next();
-    });
 
     return plugin;
 }
