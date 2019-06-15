@@ -10,17 +10,29 @@ const SIFNNS = 'http://jabber.org/protocol/feature-neg';
 const DNS = 'jabber:x:data';
 
 const IBBNS = 'http://jabber.org/protocol/ibb';
+const BSNS = 'http://jabber.org/protocol/bytestreams';
 
 const isSIStreamInitiationRequest = ({stanza}) => {
     const child = stanza.getChild("si");
-    if (!child || stanza.attrs.type !== 'set') {
+    const feature = child.getChild("feature");
+    const check1 = child.attrs.profile === SIPNS && feature.attrs.xmlns === SIFNNS;
+
+    const x = feature.getChild("x");
+    if (!x) {
         return false;
     }
-    const file = child.getChild("file");
-    if (!file) {
+    const field = x.getChild("field");
+    if (!field) {
         return false;
     }
-    return  child.attrs.xmlns === SINS && child.attrs.profile === SIPNS && file.attrs.xmlns === SIPNS;
+    const option = field.getChild("option");
+    if (!option) {
+        return false;
+    }
+
+    const check2 = x.attrs.type === 'form';
+
+    return check1 && check2;
 }
 
 const parseValues = stanza => {
@@ -83,10 +95,7 @@ class SIPlugin extends EventEmitter {
                             'type': 'list-single',
                         },
                             xml('option', null,
-                                xml('value', null, "http://jabber.org/protocol/bytestreams"),
-                            ),
-                            xml('option', null,
-                                xml('value', null, "http://jabber.org/protocol/ibb"),
+                                xml('value', null, IBBNS),
                             ),
                         ),
                     ),
@@ -159,9 +168,7 @@ class SIPlugin extends EventEmitter {
  * @returns {SIPlugin} Plugin instance
  */
 function setupSI(client) {
-    const plugin = new SIPlugin(client);
-
-    return plugin;
+    return new SIPlugin(client);
 }
 
 module.exports = setupSI;

@@ -20,23 +20,33 @@ class IBBPlugin extends EventEmitter {
     constructor(client) {
       super();
       this.client = client;
+      this.init();
+    }
+
+    init() {
+        const { iqCallee } = this.client;
+        iqCallee.set(IBBNS, 'open', ctx => {
+            this.confirmSessionRequest(ctx);
+        });
+        iqCallee.set(IBBNS, 'data', ctx => {
+            this.handleIBBData(ctx);
+        });
     }
 
     sendSessionRequest(from, to, id, sid, blockSize) {
         const { iqCaller } = this.client;
-        return iqCaller
-        .request(
-            xml(
-                'iq',
-                { type: 'set', to, id, from },
-                xml('open', {
-                    'xmlns': IBBNS,
-                    'block-size': blockSize,
-                    sid,
-                    'stanza': 'iq',
-                }),
-            )
+        const ibbreq = xml(
+            'iq',
+            { type: 'set', to, id, from },
+            xml('open', {
+                'xmlns': IBBNS,
+                'block-size': blockSize,
+                sid,
+                'stanza': 'iq',
+            }),
         );
+        return iqCaller
+        .request(ibbreq);
     }
 
     confirmSessionRequest({stanza}) {
@@ -111,21 +121,7 @@ class IBBPlugin extends EventEmitter {
  */
 
 function setupIBB(client) {
-    const plugin = new IBBPlugin(client);
-    const {middleware} = client;
-
-    middleware.use((context, next) => {
-        if (isIBBSessionRequest(context)) {
-            return plugin.confirmSessionRequest(context);
-        }
-        if (isIBBData(context)) {
-            return plugin.handleIBBData(context);
-        }
-
-        return next();
-    });
-
-    return plugin;
+    return new IBBPlugin(client);
 }
 
 module.exports = setupIBB;
