@@ -26,10 +26,11 @@ class IBBPlugin extends EventEmitter {
     init() {
         const { iqCallee } = this.client;
         iqCallee.set(IBBNS, 'open', ctx => {
-            this.confirmSessionRequest(ctx);
+            return true;
         });
         iqCallee.set(IBBNS, 'data', ctx => {
             this.handleIBBData(ctx);
+            return true;
         });
     }
 
@@ -47,18 +48,6 @@ class IBBPlugin extends EventEmitter {
         );
         return iqCaller
         .request(ibbreq);
-    }
-
-    confirmSessionRequest({stanza}) {
-        const { iqCaller } = this.client;
-        const { from, to, id } =  stanza.attrs;
-        return iqCaller
-        .request(
-            xml(
-                'iq',
-                { type: 'result', from: to, to: from, id },
-            )
-        );
     }
 
     sendByteStream(from, to, id, sid, rid, blockSize, data) {
@@ -92,18 +81,6 @@ class IBBPlugin extends EventEmitter {
         const { from, to, id } = stanza.attrs;
         const data = stanza.getChild("data");
         this.emit('IBBSuccess', {data: data.text(), from, seq: data.attrs.seq});
-        this.acknowledgeDataReception(from, to, id);
-    }
-
-    acknowledgeDataReception(to, from, id) {
-        const { iqCaller } = this.client;
-        return iqCaller
-        .request(
-            xml(
-                'iq',
-                { type: 'result', to, id, from },
-            )
-        );
     }
 
     sendClose() {
