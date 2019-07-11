@@ -5,7 +5,7 @@
     "license": "ISC",
     "keywords": [
       "XMPP",
-      "roster"
+      "in-band bytestream"
     ],
     "engines": {
       "node": ">= 10.0.0",

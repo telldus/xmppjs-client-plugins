@@ -1,11 +1,11 @@
 {
     "name": "xmppjs-client-plugins",
-    "description": "plugin for xmpp.js client",
+    "description": "si file transfer plugin for xmpp.js client",
     "version": "1.0.0",
     "license": "ISC",
     "keywords": [
       "XMPP",
-      "roster"
+      "si file transfer"
     ],
     "engines": {
       "node": ">= 10.0.0",
