@@ -1,0 +1,18 @@
+{
+    "name": "xmppjs-client-plugins",
+    "description": "plugins for xmpp.js client",
+    "version": "1.0.0",
+    "license": "ISC",
+    "keywords": [
+      "XMPP",
+      "si file transfer",
+      "in-band bytestream"
+    ],
+    "engines": {
+      "node": ">= 10.0.0",
+      "yarn": ">= 1.0.0"
+    },
+    "publishConfig": {
+      "access": "public"
+    }
+  }
