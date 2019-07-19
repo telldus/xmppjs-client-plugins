@@ -37,7 +37,7 @@ const isSIStreamInitiationRequest = ({stanza}) => {
 
 const parseValues = stanza => {
     const c1 = stanza.getChild('si');
-    if (c1.getChild('feature')) {
+    if (c1 && c1.getChild('feature')) {
         return c1.getChild('feature').getChild('x').getChild('field').getChildren('value');
     }
     return null;
@@ -54,8 +54,9 @@ class SIPlugin extends EventEmitter {
         const { iqCallee } = this.client;
         iqCallee.set(SINS, 'si', ctx => {
             if (isSIStreamInitiationRequest(ctx)) {
-                this.onSIStreamInitiationRequest(ctx);
+                return this.onSIStreamInitiationRequest(ctx);
             }
+            return false;
         });
     }
 
@@ -130,10 +131,7 @@ class SIPlugin extends EventEmitter {
 
         const acceptedMeth = hasIBB ? IBBNS : undefined;
 
-        const res = xml(
-            'iq',
-            { type: 'result', id, to: from },
-            xml('si',
+        const res = xml('si',
             {
                 'xmlns': SINS,
             },
@@ -154,10 +152,8 @@ class SIPlugin extends EventEmitter {
                         ),
                     ),
                 ),
-            ),
-        );
-        return iqCaller
-        .request(res);
+            );
+        return res;
     }
 }
 
