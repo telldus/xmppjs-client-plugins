@@ -76,6 +76,7 @@ class IBBPlugin extends EventEmitter {
             )
         );
     }
+    // TODO: Implement Closing the Bytestream
 
     handleIBBData({stanza}) {
         const { from, to, id } = stanza.attrs;
