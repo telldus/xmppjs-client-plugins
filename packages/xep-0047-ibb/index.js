@@ -61,8 +61,8 @@ class IBBPlugin extends EventEmitter {
 						'xmlns': IBBNS,
 						'seq': '0',
 						sid,
-						'nn-comment': comment,//custom atribute
-						'nn-message-group': messageGroup,//custom atribute
+						'nn-comment': comment, // custom atribute
+						'nn-message-group': messageGroup, // custom atribute
 						// TODO: See if there is a better way to pass custom data
 						// custom xml element is the suggested way, but does not work with iq, unlike message
 					}, data),
