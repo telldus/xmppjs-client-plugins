@@ -74,7 +74,7 @@ class IBBPlugin extends EventEmitter {
 	handleIBBData({stanza}) {
 		const { from } = stanza.attrs;
 		const data = stanza.getChild('data');
-		const { seq, imgcomment, imggroupid } = data.attrs.seq;
+		const { seq, imgcomment, imggroupid } = data.attrs;
 		this.emit('IBBSuccess', {
 			data: data.text(),
 			from,
