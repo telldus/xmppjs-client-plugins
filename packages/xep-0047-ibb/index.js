@@ -50,18 +50,18 @@ class IBBPlugin extends EventEmitter {
         .request(ibbreq);
     }
 
-    sendByteStream(from, to, id, sid, rid, blockSize, data) {
+    sendByteStream(from, to, id, sid, rid, blockSize, data, messageGroup, comment) {
         return this.sendSessionRequest(from, to, rid, sid, blockSize).then((res) => {
             const { from: From, id: ID, type } = res.attrs;
             if (From === to && rid === ID && type === 'result') {
-                return this.sendData(from, to, id, sid, data);
+                return this.sendData(from, to, id, sid, data, messageGroup, comment);
             } else {
                 throw res;
             }
         });
     }
 
-    sendData(from, to, id, sid, data) {
+    sendData(from, to, id, sid, data, messageGroup, comment) {
         const { iqCaller } = this.client;
         return iqCaller
         .request(
@@ -72,6 +72,8 @@ class IBBPlugin extends EventEmitter {
                     'xmlns': IBBNS,
                     'seq': '0',
                     sid,
+                    'nn-comment': comment,
+                    'nn-message-group': messageGroup,
                 }, data),
             )
         );
