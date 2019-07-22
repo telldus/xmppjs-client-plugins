@@ -61,8 +61,8 @@ class IBBPlugin extends EventEmitter {
 						'xmlns': IBBNS,
 						'seq': '0',
 						sid,
-						'nn-comment': comment, // custom atribute
-						'nn-message-group': messageGroup, // custom atribute
+						'imgcomment': comment, // custom atribute
+						'imggroupid': messageGroup, // custom atribute
 						// TODO: See if there is a better way to pass custom data
 						// custom xml element is the suggested way, but does not work with iq, unlike message
 					}, data),
@@ -74,7 +74,14 @@ class IBBPlugin extends EventEmitter {
 	handleIBBData({stanza}) {
 		const { from } = stanza.attrs;
 		const data = stanza.getChild('data');
-		this.emit('IBBSuccess', {data: data.text(), from, seq: data.attrs.seq});
+		const { seq, imgcomment, imggroupid } = data.attrs.seq;
+		this.emit('IBBSuccess', {
+			data: data.text(),
+			from,
+			seq,
+			imgcomment,
+			imggroupid,
+		});
 	}
 
 	sendClose() {
