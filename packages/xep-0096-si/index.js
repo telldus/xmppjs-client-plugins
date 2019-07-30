@@ -45,6 +45,7 @@ class SIPlugin extends EventEmitter {
 	constructor(client) {
 		super();
 		this.client = client;
+		this._supportedMethods = [];
 		this.init();
 	}
 
@@ -58,8 +59,14 @@ class SIPlugin extends EventEmitter {
 		});
 	}
 
+	addMethod(method) {
+		this._supportedMethods.push(method);
+	}
+
 	send(id, sid, to, fileSize, fileName, mimeType, date, hash) {
 		const { iqCaller } = this.client;
+
+		const preferredMethod = this._supportedMethods[0] || IBBNS;
 
 		const req = xml(
 			'iq',
@@ -94,7 +101,7 @@ class SIPlugin extends EventEmitter {
 								'type': 'list-single',
 							},
 							xml('option', null,
-								xml('value', null, IBBNS),
+								xml('value', null, preferredMethod),
 							),
 						),
 					),
@@ -117,15 +124,14 @@ class SIPlugin extends EventEmitter {
 		this.emit('incomingRequest', {from});
 		const options = stanza.getChild('si').getChild('feature').getChild('x').getChild('field').getChildren('option');
 
-		let hasIBB = false;
+		let preferredMethod = IBBNS;
 		options.map((option) => {
 			const value = option.getChildText('value');
-			if (value === IBBNS) {
-				hasIBB = true;
+			const index = this._supportedMethods.indexOf(value);
+			if (index !== -1) {
+				preferredMethod = this._supportedMethods[index];
 			}
 		});
-
-		const acceptedMeth = hasIBB ? IBBNS : undefined;
 
 		const res = xml('si',
 			{
@@ -144,7 +150,7 @@ class SIPlugin extends EventEmitter {
 						{
 							'var': 'stream-method',
 						},
-						xml('value', null, acceptedMeth),
+						xml('value', null, preferredMethod),
 					),
 				),
 			),
