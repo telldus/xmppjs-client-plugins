@@ -44,14 +44,14 @@ const parseValues = stanza => {
 class SIPlugin extends EventEmitter {
 	constructor(client) {
 		super();
-		this.client = client;
+		this.iqCallee = client.iqCallee;
+		this.iqCaller = client.iqCaller;
 		this._supportedMethods = [];
 		this.init();
 	}
 
 	init() {
-		const { iqCallee } = this.client;
-		iqCallee.set(SINS, 'si', ctx => {
+		this.iqCallee.set(SINS, 'si', ctx => {
 			if (isSIStreamInitiationRequest(ctx)) {
 				return this.onSIStreamInitiationRequest(ctx);
 			}
@@ -64,7 +64,6 @@ class SIPlugin extends EventEmitter {
 	}
 
 	send(id, sid, to, fileSize, fileName, mimeType, date, hash) {
-		const { iqCaller } = this.client;
 
 		const preferredMethod = this._supportedMethods[0] || IBBNS;
 
@@ -109,7 +108,7 @@ class SIPlugin extends EventEmitter {
 			),
 		);
 
-		return iqCaller
+		return this.iqCaller
 			.request(req).then(res => {
 				const values = parseValues(res);
 				if (values[0] && values[0].text()) {

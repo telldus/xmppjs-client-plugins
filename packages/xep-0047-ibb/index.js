@@ -8,23 +8,22 @@ const IBBNS = 'http://jabber.org/protocol/ibb';
 class IBBPlugin extends EventEmitter {
 	constructor(client) {
 		super();
-		this.client = client;
+		this.iqCallee = client.iqCallee;
+		this.iqCaller = client.iqCaller;
 		this.init();
 	}
 
 	init() {
-		const { iqCallee } = this.client;
-		iqCallee.set(IBBNS, 'open', ctx => {
+		this.iqCallee.set(IBBNS, 'open', ctx => {
 			return true;
 		});
-		iqCallee.set(IBBNS, 'data', ctx => {
+		this.iqCallee.set(IBBNS, 'data', ctx => {
 			this.handleIBBData(ctx);
 			return true;
 		});
 	}
 
 	sendSessionRequest(from, to, id, sid, blockSize) {
-		const { iqCaller } = this.client;
 		const ibbreq = xml(
 			'iq',
 			{ type: 'set', to, id, from },
@@ -35,7 +34,7 @@ class IBBPlugin extends EventEmitter {
 				'stanza': 'iq',
 			}),
 		);
-		return iqCaller
+		return this.iqCaller
 			.request(ibbreq);
 	}
 
@@ -51,8 +50,7 @@ class IBBPlugin extends EventEmitter {
 	}
 
 	sendData(from, to, id, sid, data, messageGroup, comment) {
-		const { iqCaller } = this.client;
-		return iqCaller
+		return this.iqCaller
 			.request(
 				xml(
 					'iq',
