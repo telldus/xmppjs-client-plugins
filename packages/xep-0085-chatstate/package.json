@@ -1,0 +1,24 @@
+{
+    "name": "xmppjs-client-plugins",
+    "description": "chat state plugin for xmpp.js client",
+    "version": "1.0.0",
+    "license": "ISC",
+    "keywords": [
+      "XMPP",
+      "chat state"
+    ],
+    "engines": {
+      "node": ">= 10.0.0",
+      "yarn": ">= 1.0.0"
+    },
+    "dependencies": {
+      "@xmpp/events": "^0.7.0",
+      "@xmpp/xml": "^0.7.0"
+    },
+    "devDependencies": {
+      "@xmpp/events": "^0.7.0"
+    },
+    "publishConfig": {
+      "access": "public"
+    }
+  }
