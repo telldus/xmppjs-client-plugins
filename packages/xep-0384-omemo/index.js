@@ -256,7 +256,7 @@ requestBundle(from: string, to: string, deviceId: string): any {
 		});
 }
 
-announceOMEMOSupport(deviceList: Array<string>, from: string, itemId: string): Promise<any> {
+announceOMEMOSupport(deviceList: Array<string>, from: string): Promise<any> {
 	const devices = deviceList.map((id: string): Object => {
 		return xml('device', {id});
 	});
@@ -267,7 +267,7 @@ announceOMEMOSupport(deviceList: Array<string>, from: string, itemId: string): P
 		},
 		xml('pubsub', { xmlns: PubSubNS },
 			xml('publish', { node: OMEMODeviceListNodeNS},
-				xml('item', { id: itemId },
+				xml('item', { id: 'current' },
 					xml('list', { xmlns: OMEMODeviceListNS},
 						...devices,
 					)))));
@@ -275,7 +275,7 @@ announceOMEMOSupport(deviceList: Array<string>, from: string, itemId: string): P
 		.request(req);
 }
 
-announceBundleInfo(data: Object, deviceId: string, from: string, itemId: string): Promise<any> {
+announceBundleInfo(data: Object, deviceId: string, from: string): Promise<any> {
 	const {
 		signedPreKeyPublic,
 		signedPreKeyId,
@@ -293,7 +293,7 @@ announceBundleInfo(data: Object, deviceId: string, from: string, itemId: string)
 		},
 		xml('pubsub', { xmlns: PubSubNS },
 			xml('publish', { node: BundleInfoNode + deviceId},
-				xml('item', { id: itemId},
+				xml('item', { id: 'current'},
 					xml('bundle', { xmlns: OMEMODeviceListNS},
 						xml('signedPreKeyPublic', {signedPreKeyId}, signedPreKeyPublic),
 						xml('signedPreKeySignature', null, signedPreKeySignature),
