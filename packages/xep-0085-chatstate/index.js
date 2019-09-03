@@ -36,20 +36,22 @@ class ChatStateNotificationsPlugin extends EventEmitter {
 			jid,
 			type,
 		};
-		if (stanza.getChild('composing')) {
-			this.emit('chatstate.composing', payload);
-		}
-		if (stanza.getChild('paused')) {
-			this.emit('chatstate.paused', payload);
-		}
-		if (stanza.getChild('active')) {
-			this.emit('chatstate.active', payload);
-		}
-		if (stanza.getChild('inactive')) {
-			this.emit('chatstate.inactive', payload);
-		}
-		if (stanza.getChild('gone')) {
-			this.emit('chatstate.gone', payload);
+		if (type !== 'error') {
+			if (stanza.getChild('composing')) {
+				this.emit('chatstate.composing', payload);
+			}
+			if (stanza.getChild('paused')) {
+				this.emit('chatstate.paused', payload);
+			}
+			if (stanza.getChild('active')) {
+				this.emit('chatstate.active', payload);
+			}
+			if (stanza.getChild('inactive')) {
+				this.emit('chatstate.inactive', payload);
+			}
+			if (stanza.getChild('gone')) {
+				this.emit('chatstate.gone', payload);
+			}
 		}
 	}
 
