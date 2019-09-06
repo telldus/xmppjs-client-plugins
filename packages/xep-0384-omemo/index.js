@@ -129,13 +129,14 @@ constructor(client: Object) {
 	this.client = client;
 }
 
-sendMessage(from: string, to: string, encryptionPayload: Object, fallbackMessage: string, id: number, sid: number, chatState?: string | null = null): Promise<any> {
+sendMessage(from: string, to: string, encryptionPayload: Object, fallbackMessage: string, id: number, sid: number, chatState: string | null = null, requestReceipt: boolean = false): Promise<any> {
 	let chatStateXML = chatState ? xml(chatState, {
 		xmlns: ChatStateNS,
 	}) :
 		undefined;
 	let fallbackMessageXML = fallbackMessage ? xml('body', null, fallbackMessage) :
 		undefined;
+	let MessageDeliveryReceiptXML = requestReceipt ? xml('request', {xmlns: 'urn:xmpp:receipts'}) : undefined;
 
 	let encryptionXML = xml('encryption', {
 		xmlns: ExplicitEncryptionNS,
@@ -166,6 +167,7 @@ sendMessage(from: string, to: string, encryptionPayload: Object, fallbackMessage
 		encryptionXML,
 		fallbackMessageXML,
 		chatStateXML,
+		MessageDeliveryReceiptXML,
 		xml('store', {xmlns: 'urn:xmpp:hints'})
 	);
 	return this.client.send(req);
