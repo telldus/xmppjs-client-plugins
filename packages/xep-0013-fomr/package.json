@@ -1,21 +1,22 @@
 {
     "name": "xmppjs-client-plugins",
-    "description": "plugins for xmpp.js client",
+    "description": "offline message retrieval plugin for xmpp.js client",
     "version": "1.0.0",
     "license": "ISC",
     "keywords": [
       "XMPP",
-      "si file transfer",
-      "in-band bytestream",
-      "socks5",
-      "chat state",
-      "message delivery receipt",
-      "omemo",
-      "flexible offline message retrieval"
+      "OMEMO"
     ],
     "engines": {
       "node": ">= 10.0.0",
       "yarn": ">= 1.0.0"
+    },
+    "dependencies": {
+      "@xmpp/events": "^0.7.0",
+      "@xmpp/xml": "^0.7.0"
+    },
+    "devDependencies": {
+      "@xmpp/events": "^0.7.0"
     },
     "publishConfig": {
       "access": "public"
