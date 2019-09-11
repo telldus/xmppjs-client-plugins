@@ -22,7 +22,6 @@
 const {EventEmitter} = require('@xmpp/events');
 const xml = require('@xmpp/xml');
 
-const	ChatStateNS = 'http://jabber.org/protocol/chatstates';
 const	PubSubEventNS = 'http://jabber.org/protocol/pubsub#event';
 const	PubSubNS = 'http://jabber.org/protocol/pubsub';
 const	OMEMODeviceListNodeNS = 'eu.siacs.conversations.axolotl.devicelist';
@@ -121,6 +120,20 @@ const preparePayloadBundle = (stanza: Object, deviceId?: string): Object => {
 	return payload;
 };
 
+export type KeysRecord = {
+	prekey: string,
+	key: string,
+	deviceId: string,
+};
+
+export type KeysType = Array<KeysRecord>;
+
+export type EncryptionPayloadType = {
+	ciphertext: string,
+	iv: string,
+	keys: KeysType,
+};
+
 class OMEMOPlugin extends EventEmitter {
 iqCaller: Object;
 
@@ -129,15 +142,7 @@ constructor(client: Object) {
 	this.client = client;
 }
 
-sendMessage(from: string, to: string, encryptionPayload: Object, fallbackMessage: string, id: number, sid: number, chatState: string | null = null, requestReceipt: boolean = false): Promise<any> {
-	let chatStateXML = chatState ? xml(chatState, {
-		xmlns: ChatStateNS,
-	}) :
-		undefined;
-	let fallbackMessageXML = fallbackMessage ? xml('body', null, fallbackMessage) :
-		undefined;
-	let MessageDeliveryReceiptXML = requestReceipt ? xml('request', {xmlns: 'urn:xmpp:receipts'}) : undefined;
-
+sendMessage(from: string, to: string, type: 'chat' | 'groupchat' | 'normal', encryptionPayload: EncryptionPayloadType, id: number, sid: number, otherElements: Array<Object>): Promise<any> {
 	let encryptionXML = xml('encryption', {
 		xmlns: ExplicitEncryptionNS,
 		name: 'OMEMO',
@@ -155,7 +160,7 @@ sendMessage(from: string, to: string, encryptionPayload: Object, fallbackMessage
 			to,
 			from,
 			id,
-			type: 'chat',
+			type,
 		},
 		xml('encrypted', { xmlns: OMEMODeviceListNS },
 			xml('header', { sid },
@@ -165,10 +170,7 @@ sendMessage(from: string, to: string, encryptionPayload: Object, fallbackMessage
 			xml('payload', null, ciphertext)
 		),
 		encryptionXML,
-		fallbackMessageXML,
-		chatStateXML,
-		MessageDeliveryReceiptXML,
-		xml('store', {xmlns: 'urn:xmpp:hints'})
+		...otherElements,
 	);
 	return this.client.send(req);
 }
