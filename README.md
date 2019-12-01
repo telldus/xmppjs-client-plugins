@@ -9,3 +9,30 @@ Set of plugins for [xmppjs](https://github.com/xmppjs/xmpp.js)
 * [XEP-0096 - SI File Transfer](https://xmpp.org/extensions/xep-0096.html)
 * [XEP-0184 - Message Delivery Receipts](https://xmpp.org/extensions/xep-0184.html)
 * [XEP-0384 - OMEMO](https://xmpp.org/extensions/xep-0384.html)
+
+
+## Usage:
+
+```
+
+import {
+  client,
+} from "@xmpp/client";
+import {
+  setupOMEMO,
+} from 'xmppjs-client-plugins';
+
+
+const xmpp = client({service: 'wss://xmpp.example.com'});
+const omemoPlugin = setupOMEMO(xmpp);
+
+// Call methods
+omemoPlugin.requestDeviceList(fromFullJID, toBareJID).then((deviceList: Object) => {
+}).catch((err) => {
+});
+
+// Set listener
+OMEMOPlugin.on('omemo.devicelist', (deviceList: Object) => {
+});
+
+```
