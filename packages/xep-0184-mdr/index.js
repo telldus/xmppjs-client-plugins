@@ -1,6 +1,4 @@
 
- */
-// @flow
 'use strict';
 
 const {EventEmitter} = require('@xmpp/events');
