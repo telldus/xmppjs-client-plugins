@@ -35,4 +35,28 @@ omemoPlugin.requestDeviceList(fromFullJID, toBareJID).then((deviceList: Object) 
 OMEMOPlugin.on('omemo.devicelist', (deviceList: Object) => {
 });
 
+const fromJid = "";
+const toJid = "";
+const chatType = "chat";
+const encryptionPayload = {
+  ciphertext: "",
+  iv: "",
+  keys: [{
+    prekey: "",
+    key: "",
+    deviceId: "",
+  }],
+};
+const messageId = "unique_messgae_id"; // set as `id` on <message> element
+const sid = ""; // `sid` set on <header> element
+const otherElements = [
+  xml('active', {
+    xmlns: "http://jabber.org/protocol/chatstates",
+  })
+]; // Any other supported xml elements, say chat state.
+
+OMEMOPlugin.sendMessage(fromJid, toJid, chatType, encryptionPayload, messageId, sid, otherElements).then(() => {
+});
+
+
 ```
