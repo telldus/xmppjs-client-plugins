@@ -26,14 +26,20 @@ import {
 const xmpp = client({service: 'wss://xmpp.example.com'});
 const omemoPlugin = setupOMEMO(xmpp);
 
+// Set listener
+OMEMOPlugin.on('omemo.devicelist', (deviceList: Object) => {
+});
+
+OMEMOPlugin.announceOMEMOSupport(myDevicesArray, myBareJid)
+
 // Call methods
 omemoPlugin.requestDeviceList(fromFullJID, toBareJID).then((deviceList: Object) => {
 }).catch((err) => {
 });
 
-// Set listener
-OMEMOPlugin.on('omemo.devicelist', (deviceList: Object) => {
+OMEMOPlugin.requestBundle(bareFrom, bareTo, deviceId).then((bundle: Object): any => {
 });
+
 
 const fromJid = "";
 const toJid = "";
