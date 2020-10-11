@@ -13,7 +13,9 @@ Set of plugins for [xmppjs](https://github.com/xmppjs/xmpp.js)
 
 ## Usage:
 
-```
+#### OMEMO [OUTDATED - There has been some additions and namespace changes in the protocol]
+
+```javascript
 
 import {
   client,
@@ -23,24 +25,58 @@ import {
 } from 'xmppjs-client-plugins';
 
 
+// Set up the plugin
 const xmpp = client({service: 'wss://xmpp.example.com'});
 const omemoPlugin = setupOMEMO(xmpp);
+
+// Announce OMEMO support, and publish the current/latest devices list and each device's bundle info
+OMEMOPlugin.announceOMEMOSupport(myDevicesArray, myBareJid)
+OMEMOPlugin.announceBundleInfo(payload, deviceId, bareJid).then((res: any): any => {
+}).catch((err: any): any => {
+});
 
 // Set listener
 OMEMOPlugin.on('omemo.devicelist', (deviceList: Object) => {
 });
 
-OMEMOPlugin.announceOMEMOSupport(myDevicesArray, myBareJid)
+// Subscribe to contact's devices list update If not already subscribed
+OMEMOPlugin.subscribeToDeviceListUpdate(fromFullJid, toBareJid).then((stanza: Object): Object => {
+  const child = stanza.getChild('pubsub');
+  if (!child || stanza.attrs.type !== 'result') {
+    return stanza;
+  }
+  const subscription = child.getChild('subscription');
+  if (subscription && subscription.attrs.subscription) {
+    // Cache subscription status
+  }
+  return stanza;
+});
 
-// Call methods
-omemoPlugin.requestDeviceList(fromFullJID, toBareJID).then((deviceList: Object) => {
+// Subscribe to contact's device's bundle update If not already subscribed
+OMEMOPlugin.subscribeToBundleUpdate(fromFullJid, toBareJid, deviceId).then((stanza: Object): Object => {
+  const child = stanza.getChild('pubsub');
+  if (!child || stanza.attrs.type !== 'result') {
+    return stanza;
+  }
+  const subscription = child.getChild('subscription');
+  if (subscription && subscription.attrs.subscription && subscription.attrs.node) {
+    // Cache subscription status
+  }
+  return stanza;
+});
+
+// Request for contact's devices list on demand
+omemoPlugin.requestDeviceList(fromFullJid, toBareJid).then((deviceList: Object) => {
+  // Cache devices
 }).catch((err) => {
 });
 
-OMEMOPlugin.requestBundle(bareFrom, bareTo, deviceId).then((bundle: Object): any => {
+// Request for contact's device's bundle on demand
+OMEMOPlugin.requestBundle(bareFromJid, bareToJid, deviceId).then((bundle: Object): any => {
+  // Cache bundle
 });
 
-
+// Send encrypted message
 const fromJid = "";
 const toJid = "";
 const chatType = "chat";
@@ -64,5 +100,6 @@ const otherElements = [
 OMEMOPlugin.sendMessage(fromJid, toJid, chatType, encryptionPayload, messageId, sid, otherElements).then(() => {
 });
 
+// Message reception can be handle inside xmpp client's "on('stanza', async (stanza: any) => {})" listener as usual. Check for "encrypted" child element.
 
 ```
