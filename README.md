@@ -100,6 +100,6 @@ const otherElements = [
 OMEMOPlugin.sendMessage(fromJid, toJid, chatType, encryptionPayload, messageId, sid, otherElements).then(() => {
 });
 
-// Message reception can be handle inside xmpp client's "on('stanza', async (stanza: any) => {})" listener as usual. Check for "encrypted" child element.
+// Message reception can be handled inside xmpp client's "on('stanza', async (stanza: any) => {})" listener as usual. Check for "encrypted" child element.
 
 ```
